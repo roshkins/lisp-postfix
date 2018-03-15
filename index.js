@@ -16,6 +16,8 @@ toExport.parse = function parse(statement) {
   let token = "";
   let stack = [];
   deparensStatement.split("").forEach(char => {
+    //skip char in token
+    let skip = false;
     switch (char) {
       case "(":
         openMinusClosed++;
@@ -29,12 +31,12 @@ toExport.parse = function parse(statement) {
           //push token
           stack.push(token);
           token = "";
+          skip = true;
         }
         break;
-      default:
-        //add to current token
-        token += char;
     }
+    //add to current token
+    if (!skip) token += char;
   });
   //push last token to stack
   stack.push(token);

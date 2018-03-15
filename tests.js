@@ -30,3 +30,7 @@ assert("parses addition", () => {
   let testArray = ["2", "2", "+"];
   return assertArray(array, testArray);
 });
+
+assert("parses simple recursion", () =>
+  assertArray(parse("((4 2 /) 3 +)"), ["(4 2 /)", "3", "+"])
+);
