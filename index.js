@@ -36,9 +36,12 @@ toExport.lookup = {
   lambda: (args, code) => {
     return (...lambdaArgs) => {
       console.log(`lambdaArgs ${lambdaArgs}`);
-      const scope = Object.assign({}, toExport.lookup);
-      args.forEach((symbol, index) => (scope[symbol] = lambdaArgs[index]));
-      return toExport.eval(code, scope);
+      let scope = Object.assign({}, toExport.lookup);
+      args.forEach(
+        (symbol, index) => (scope[dequoteHelper(symbol)] = lambdaArgs[index])
+      );
+      console.log("scope " + JSON.stringify(scope));
+      return toExport.eval("x", scope);
     };
   }
 };
@@ -50,9 +53,9 @@ const isSymbol = (toExport.isSymbol = function isSymbol(possibleSymbol) {
   return possibleSymbol[possibleSymbol.length - 1] === "'";
 });
 
-toExport.lookupSymbol = function lookupSymbol(symbol) {
+toExport.lookupSymbol = function lookupSymbol(symbol, scope = toExport.lookup) {
   const unquotedSymbol = dequoteHelper(symbol);
-  return toExport.lookup[unquotedSymbol];
+  return scope[unquotedSymbol];
 };
 
 function dequoteHelper(symbol) {
@@ -84,10 +87,10 @@ function convertToString(statement) {
 toExport.stringEval = function stringEval(statement) {
   convertToString(toExport.eval(statement));
 };
-toExport.eval = function eval(statement, lookup = toExport.lookup) {
+toExport.eval = function eval(statement, scopeObj) {
   //return anything that is a primative
   if (convert(statement)) return convert(statement);
-
+  const scope = Object.assign({}, toExport.lookup, scopeObj);
   //check if parens, signifying a list
   if (statement[0] === "(" && statement[statement.length - 1] === ")") {
     const parsed = toExport.parse(statement);
@@ -99,7 +102,7 @@ toExport.eval = function eval(statement, lookup = toExport.lookup) {
       //if it's a lambda, store the code as a string
       if (parsed[parsed.length - 1] === "lambda") {
         console.log("LABMDA " + parsed[parsed.length - 2]);
-        return toExport.lookupSymbol("lambda'")(evaled[0], parsed[1]);
+        return toExport.lookupSymbol("lambda'", scope)(evaled[0], parsed[1]);
       } else {
         //pop last function from stack
         const executingFunction = evaled.pop();
@@ -124,11 +127,11 @@ toExport.eval = function eval(statement, lookup = toExport.lookup) {
     }
 
     //lookup and return result of function from lookup table, if none, try parsing it as a number, else return quoted symbol
-    const assosciatedFn = toExport.lookupSymbol(parsingStatement);
+    const assosciatedFn = toExport.lookupSymbol(parsingStatement, scope);
     if (assosciatedFn) return assosciatedFn;
     return (
       Number(parsingStatement) ||
-      toExport.lookupSymbol("quote")(parsingStatement)
+      toExport.lookupSymbol("quote", scope)(parsingStatement)
     );
   }
 };
