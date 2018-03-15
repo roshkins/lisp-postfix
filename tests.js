@@ -82,3 +82,5 @@ assert("evauls division with decimal", () => equals(eval("(7 2 /)"), 3.5));
 
 //recursion
 assert("addition recursively adds", () => equals(eval("((5 5 +) 5 +)"), 15));
+
+assert("operations order maintained", () => equals(eval("((2 10 +) 3 /)"), 4));
