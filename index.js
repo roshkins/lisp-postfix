@@ -30,11 +30,14 @@ toExport.parse = function parse(statement) {
           stack.push(token);
           token = "";
         }
+        break;
       default:
         //add to current token
         token += char;
     }
   });
+  //push last token to stack
+  stack.push(token);
   //return stack
   return stack;
 };
