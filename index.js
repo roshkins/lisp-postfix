@@ -7,7 +7,17 @@ toExport.lookup = {
   "/": argsAccumulatorHelper((num1, num2) => num1 / num2),
   "eq?": (num1, num2) => num1 === num2,
   true: true,
-  false: false
+  false: false,
+  quote: atom => {
+    if (atom[atom.length - 1] === "'") {
+      //if quoted, return as is
+      return atom;
+    } else {
+      //else return atom quoted
+      return `${atom}'`;
+    }
+  }
+  // "define": (atom )
 };
 
 //creates a function that maps over any number of arguments from 2 args
@@ -30,13 +40,17 @@ toExport.eval = function eval(statement) {
     return executingFunction.apply(null, evaled);
   } else {
     //check if quoted
-    //if quoted, return quoted symbol
-    //else
-    //lookup and return function from lookup table, if none, try parsing it as a number, else return symbol
+    //if quoted, remove quote and lookup no matter what
+    let parsingStatement = statement.trim();
+    if (parsingStatement[0] === "'") {
+      parsingStatement = parsingStatement.slice(1);
+      return lookup[parsingStatement];
+    }
+    //lookup and return function from lookup table, if none, try parsing it as a number, else return quoted atom
     return (
-      lookup[statement.trim()] ||
-      Number(statement.trim()) ||
-      statement.trim() + "'"
+      lookup[parsingStatement] ||
+      Number(parsingStatement) ||
+      lookup["quote"](parsingStatement)
     );
   }
 };

@@ -43,7 +43,7 @@ function weakEquals(result, expected) {
   return result === expected;
 }
 
-assert("eval runs", () => eval("()"));
+assert("eval runs and returns nil", () => equals(eval("()"), "'()"));
 
 assert("parses addition", () => {
   let array = parse("(2 2 +)");
@@ -91,3 +91,17 @@ assert(
     equals(eval("((2 2 eq?) (2 2 eq?) eq?)"), true) &&
     equals(eval("((2 2 eq?) (3 2 eq?) eq?)"), false)
 );
+
+assert("quote returns a symbol", () => equals(eval("(a quote)"), "a'"));
+assert("and lists can be symbols", () =>
+  equals(eval("((1 2 3)' quote)"), "(1 2 3)'")
+);
+
+//define
+
+assert("define binds values to symbols", () => {
+  eval("(define a 5)");
+  return equals(eval("a"), 5);
+});
+
+//quoted atoms lookup no matter what
