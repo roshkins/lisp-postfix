@@ -11,3 +11,7 @@ function assert(description, statementCb) {
 }
 
 assert("eval runs", () => eval("()"));
+
+assert("parses addition", () => {
+  eval("(2 2 +)");
+});
