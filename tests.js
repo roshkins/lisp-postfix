@@ -9,6 +9,7 @@ function assert(description, statementCb) {
   } else {
     console.log("failed :(");
   }
+  console.log("\n\n");
 }
 
 function assertArray(array, testArray) {
@@ -21,6 +22,24 @@ function assertArray(array, testArray) {
     array.every((item, index) => item === testArray[index]) &&
     array.length === testArray.length
   );
+}
+
+function equals(result, expected) {
+  console.log(
+    `result: ${JSON.stringify(result)} expected: ${JSON.stringify(expected)}`
+  );
+  return result === expected;
+}
+
+function weakEquals(result, expected) {
+  console.log(
+    `result: ${JSON.stringify(
+      result
+    )} and is ${!!result} expected: ${JSON.stringify(
+      expected
+    )} and is ${!!expected}`
+  );
+  return result === expected;
 }
 
 assert("eval runs", () => eval("()"));
@@ -42,3 +61,7 @@ assert("parses symbols", () =>
 assert("parses quote", () =>
   assertArray(parse("((2 3 +)' a' b)"), ["(2 3 +)'", "a'", "b"])
 );
+
+assert("evals single number", () => equals(eval("2"), 2));
+
+assert("evals simple addition", () => equals(eval("(2 3 +)"), 5));
