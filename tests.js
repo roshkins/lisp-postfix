@@ -105,7 +105,7 @@ assert(
 
 assert("quote returns a symbol", () => equals(eval("(a quote)"), "a'"));
 assert("and lists can be symbols", () =>
-  assertArray(eval("((1 2 3)' quote)"), "(1 2 3)'")
+  equalsEval("((1 2 3)' quote)", "(1 2 3)'")
 );
 
 //define
@@ -120,7 +120,7 @@ assert("define binds values to symbols", () => {
 
 assert("cons, car, cdr work", () => {
   eval("(box (3 4 cons) define)");
-  return equals(eval("(box car)"), 3) && equals(eval("(box cdr)"), 4);
+  return equals(eval("(box car)"), 3) && assertArray(eval("(box cdr)"), [4]);
 });
 
 //symbols
@@ -139,7 +139,7 @@ assert("lists work", () => {
   console.log(lisp.lookup);
   return (
     equalsEval("(some-list car)", 1) &&
-    assertArray(eval("(some-list cdr)", [2, 3])) &&
+    assertArray(eval("(some-list cdr)"), [2, 3]) &&
     assertArray(eval("(((some-list cdr) cdr) cdr)"), [])
   );
 });

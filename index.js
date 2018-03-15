@@ -30,7 +30,7 @@ toExport.lookup = {
   },
   cons: (a, b) => [a, b],
   car: consArray => toExport.eval(consArray[0]),
-  cdr: consArray => toExport.eval([...consArray].slice(1))
+  cdr: consArray => [...consArray].slice(1)
 };
 
 const symbolizeArray = (toExport.symbolizeArray = array =>
@@ -63,6 +63,7 @@ function convert(statement) {
   //handle different statement types
   if (typeof statement === "number" || !isNaN(Number(statement)))
     return Number(statement);
+  if (statement instanceof Array) return Array;
   return false;
 }
 function convertToString(statement) {
@@ -74,7 +75,7 @@ toExport.stringEval = function stringEval(statement) {
   convertToString(toExport.eval(statement));
 };
 toExport.eval = function eval(statement) {
-  //return anything that
+  //return anything that is a primative
   if (convert(statement)) return convert(statement);
   const lookup = toExport.lookup;
 
