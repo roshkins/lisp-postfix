@@ -9,6 +9,7 @@ toExport.lookup = {
   true: true,
   false: false,
   quote: atom => {
+    if (atom instanceof Array) return symbolizeArray(atom);
     if (atom[atom.length - 1] === "'") {
       //if quoted, return as is
       return atom;
@@ -21,18 +22,23 @@ toExport.lookup = {
     //if symbol
     //dequote the value and parse it into a parsed array
     if (isSymbol(value)) {
-      const parsedAndDequoted = parse(dequoteHelper(value));
+      const parsedAndDequoted = toExport.parse(dequoteHelper(value));
+      toExport.lookup[dequoteHelper(symbol)] = parsedAndDequoted;
+    } else {
+      toExport.lookup[dequoteHelper(symbol)] = value;
     }
-    toExport.lookup[dequoteHelper(symbol)] = value;
   },
   cons: (a, b) => [a, b],
-  car: consArray => consArray[0],
-  cdr: consArray => [...consArray].slice(1)
+  car: consArray => toExport.eval(consArray[0]),
+  cdr: consArray => toExport.eval([...consArray].slice(1))
 };
 
-function isSymbol(possibleSymbol) {
+const symbolizeArray = (toExport.symbolizeArray = array =>
+  `(${array.join(" ")})'`);
+
+const isSymbol = (toExport.isSymbol = function isSymbol(possibleSymbol) {
   return possibleSymbol[possibleSymbol.length - 1] === "'";
-}
+});
 
 toExport.lookupSymbol = function lookupSymbol(symbol) {
   const unquotedSymbol = dequoteHelper(symbol);
@@ -52,11 +58,28 @@ function argsAccumulatorHelper(callback) {
     return [...args].reduce(callback);
   };
 }
+
+function convert(statement) {
+  //handle different statement types
+  if (typeof statement === "number" || !isNaN(Number(statement)))
+    return Number(statement);
+  return false;
+}
+function convertToString(statement) {
+  if (statement instanceof Array) return symbolizeArray(statement);
+  if (typeof statement === "number") return "" + statement;
+  return statement;
+}
+toExport.stringEval = function stringEval(statement) {
+  convertToString(toExport.eval(statement));
+};
 toExport.eval = function eval(statement) {
+  //return anything that
+  if (convert(statement)) return convert(statement);
   const lookup = toExport.lookup;
+
   //check if parens, signifying a list
   if (statement[0] === "(" && statement[statement.length - 1] === ")") {
-    //parse list
     const parsed = toExport.parse(statement);
     if (parsed.length < 1) return "()'";
     //map eval to each element in list
@@ -69,6 +92,16 @@ toExport.eval = function eval(statement) {
   } else {
     let parsingStatement = statement.trim();
     console.log("Parsing statement", parsingStatement);
+
+    //parse symbol
+    console.log(statement);
+    if (isSymbol(statement)) {
+      console.log("is symbol");
+      const parsed = toExport.parse(statement.slice(0, statement.length - 1));
+      console.log("parsed statement", parsed);
+      return parsed.map(toExport.eval);
+    }
+
     //lookup and return result of function from lookup table, if none, try parsing it as a number, else return quoted symbol
     const assosciatedFn = toExport.lookupSymbol(parsingStatement);
     if (assosciatedFn) return assosciatedFn;

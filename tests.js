@@ -2,14 +2,22 @@ const lisp = require("./index.js");
 const eval = lisp.eval;
 const parse = lisp.parse;
 const lookup = lisp.lookup;
+let passed = 0;
+let failed = 0;
+let total = 0;
 function assert(description, statementCb) {
   console.log(description);
   console.log(statementCb.toString());
   if (statementCb()) {
     console.log("passed!");
+    passed++;
   } else {
     console.error("failed :(");
+    failed++;
   }
+  total++;
+
+  console.log(`Passed ${passed} Failed ${failed} / total ${total}`);
   console.log("\n\n");
 }
 
@@ -97,7 +105,7 @@ assert(
 
 assert("quote returns a symbol", () => equals(eval("(a quote)"), "a'"));
 assert("and lists can be symbols", () =>
-  equals(eval("((1 2 3)' quote)"), "(1 2 3)'")
+  assertArray(eval("((1 2 3)' quote)"), "(1 2 3)'")
 );
 
 //define
@@ -115,13 +123,23 @@ assert("cons, car, cdr work", () => {
   return equals(eval("(box car)"), 3) && equals(eval("(box cdr)"), 4);
 });
 
+//symbols
+assert("symbols are symbols", () => {
+  return equals(lisp.isSymbol("(1 2 3)'"), true);
+});
+
 //lists work
+
+assert("simple symbol list evals to array", () => {
+  return assertArray(eval("(1 2 3)'"), [1, 2, 3]);
+});
 
 assert("lists work", () => {
   eval("(some-list (1 2 3)' define)");
+  console.log(lisp.lookup);
   return (
-    equalsEval("(some-list car)", 6) &&
-    equalsEval("(some-list cdr)", "(2 3)'") &&
-    equalsEval("(((some-list cdr) cdr) cdr)", "()'")
+    equalsEval("(some-list car)", 1) &&
+    assertArray(eval("(some-list cdr)", [2, 3])) &&
+    assertArray(eval("(((some-list cdr) cdr) cdr)"), [])
   );
 });
