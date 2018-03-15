@@ -36,7 +36,7 @@ function weakEquals(result, expected) {
   console.log(
     `result: ${JSON.stringify(
       result
-    )} and is ${!!result} expected: ${JSON.stringify(
+    )} and is ${!!result}y expected: ${JSON.stringify(
       expected
     )} and is ${!!expected}y`
   );
@@ -102,7 +102,7 @@ assert("and lists can be symbols", () =>
 assert("define binds values to symbols", () => {
   eval("(a 5 define)");
   console.log(lisp.lookup);
-  return weakEquals(lisp.lookup["5"], true) && equals(eval("a"), 5);
+  return weakEquals(!!lisp.lookupSymbol("a'"), true) && equals(eval("a"), 5);
 });
 
 //quoted atoms lookup no matter what

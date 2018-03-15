@@ -18,14 +18,14 @@ toExport.lookup = {
     }
   },
   define: (symbol, value) => {
-    toExport.lookup[dequoteHelper(symbol)] = () => value;
+    toExport.lookup[dequoteHelper(symbol)] = value;
   }
 };
 
-function lookupSymbol(symbol) {
+toExport.lookupSymbol = function lookupSymbol(symbol) {
   const unquotedSymbol = dequoteHelper(symbol);
   return toExport.lookup[unquotedSymbol];
-}
+};
 
 function dequoteHelper(symbol) {
   if (symbol[symbol.length - 1] === "'") {
@@ -35,7 +35,10 @@ function dequoteHelper(symbol) {
 }
 //creates a function that maps over any number of arguments from 2 args
 function argsAccumulatorHelper(callback) {
-  return (...args) => [...args].reduce(callback);
+  return (...args) => {
+    console.log([...args]);
+    return [...args].reduce(callback);
+  };
 }
 toExport.eval = function eval(statement) {
   const lookup = toExport.lookup;
@@ -46,18 +49,20 @@ toExport.eval = function eval(statement) {
     if (parsed.length < 1) return "()'";
     //map eval to each element in list
     const evaled = parsed.map(toExport.eval);
-    console.log(evaled);
+    console.log("evaled ", evaled);
     //pop last function from stack
     const executingFunction = evaled.pop();
     //use javascript apply to pass in all other elements as parameters
     return executingFunction.apply(null, evaled);
   } else {
     let parsingStatement = statement.trim();
-    //lookup and return function from lookup table, if none, try parsing it as a number, else return quoted atom
+    console.log("Parsing statement", parsingStatement);
+    //lookup and return result of function from lookup table, if none, try parsing it as a number, else return quoted symbol
+    const assosciatedFn = toExport.lookupSymbol(parsingStatement);
+    if (assosciatedFn) return assosciatedFn;
     return (
-      lookupSymbol(parsingStatement) ||
       Number(parsingStatement) ||
-      lookupSymbol("quote")(parsingStatement)
+      toExport.lookupSymbol("quote")(parsingStatement)
     );
   }
 };
