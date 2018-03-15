@@ -43,7 +43,7 @@ function weakEquals(result, expected) {
   return result === expected;
 }
 
-assert("eval runs and returns nil", () => equals(eval("()"), "'()"));
+assert("eval runs and returns nil", () => equals(eval("()"), "()'"));
 
 assert("parses addition", () => {
   let array = parse("(2 2 +)");
