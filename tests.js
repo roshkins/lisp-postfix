@@ -153,3 +153,11 @@ assert("atoms exist", () => {
     equalsEval("((1 2) atom?)", false)
   );
 });
+
+// lambdas work
+
+assert("simple lambda works", () => {
+  eval("(square ((x) (x x *) lambda) define)");
+  console.log(lisp.lookup);
+  return equalsEval("(5 square)", 25);
+});

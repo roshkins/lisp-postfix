@@ -21,17 +21,26 @@ toExport.lookup = {
   "atom?": item => !isSymbol(item) && item.length === undefined,
   define: (symbol, value) => {
     //if symbol
-    //dequote the value and parse it into a parsed array
-    if (isSymbol(value)) {
+    //if the value is a string dequote the value and parse it into a parsed array
+    if (typeof value === "string" && isSymbol(value)) {
       const parsedAndDequoted = toExport.parse(dequoteHelper(value));
       toExport.lookup[dequoteHelper(symbol)] = parsedAndDequoted;
     } else {
       toExport.lookup[dequoteHelper(symbol)] = value;
+      console.log(`Assigned ${symbol} ${value}`);
     }
   },
   cons: (a, b) => [a, b],
   car: consArray => toExport.eval(consArray[0]),
-  cdr: consArray => [...consArray].slice(1)
+  cdr: consArray => [...consArray].slice(1),
+  lambda: (args, code) => {
+    return (...lambdaArgs) => {
+      console.log(`lambdaArgs ${lambdaArgs}`);
+      const scope = Object.assign({}, toExport.lookup);
+      args.forEach((symbol, index) => (scope[symbol] = lambdaArgs[index]));
+      return toExport.eval(code, scope);
+    };
+  }
 };
 
 const symbolizeArray = (toExport.symbolizeArray = array =>
@@ -75,10 +84,9 @@ function convertToString(statement) {
 toExport.stringEval = function stringEval(statement) {
   convertToString(toExport.eval(statement));
 };
-toExport.eval = function eval(statement) {
+toExport.eval = function eval(statement, lookup = toExport.lookup) {
   //return anything that is a primative
   if (convert(statement)) return convert(statement);
-  const lookup = toExport.lookup;
 
   //check if parens, signifying a list
   if (statement[0] === "(" && statement[statement.length - 1] === ")") {
@@ -86,13 +94,18 @@ toExport.eval = function eval(statement) {
     if (parsed.length < 1) return "()'";
     //map eval to each element in list
     const evaled = parsed.map(toExport.eval);
-    console.log("evaled ", evaled);
     //if last element is a function, run it on everything
     if (evaled[evaled.length - 1] instanceof Function) {
-      //pop last function from stack
-      const executingFunction = evaled.pop();
-      //use javascript apply to pass in all other elements as parameters
-      return executingFunction.apply(null, evaled);
+      //if it's a lambda, store the code as a string
+      if (parsed[parsed.length - 1] === "lambda") {
+        console.log("LABMDA " + parsed[parsed.length - 2]);
+        return toExport.lookupSymbol("lambda'")(evaled[0], parsed[1]);
+      } else {
+        //pop last function from stack
+        const executingFunction = evaled.pop();
+        //use javascript apply to pass in all other elements as parameters
+        return executingFunction.apply(null, evaled);
+      }
     } else {
       //else return as array
       return evaled;
