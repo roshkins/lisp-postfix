@@ -8,16 +8,17 @@ toExport.lookup = {
   "eq?": (num1, num2) => num1 === num2,
   true: true,
   false: false,
-  quote: atom => {
-    if (atom instanceof Array) return symbolizeArray(atom);
-    if (atom[atom.length - 1] === "'") {
+  quote: item => {
+    if (item instanceof Array) return symbolizeArray(item);
+    if (item[item.length - 1] === "'") {
       //if quoted, return as is
-      return atom;
+      return item;
     } else {
-      //else return atom quoted
-      return `${atom}'`;
+      //else return item quoted
+      return `${item}'`;
     }
   },
+  "atom?": item => !isSymbol(item) && item.length === undefined,
   define: (symbol, value) => {
     //if symbol
     //dequote the value and parse it into a parsed array
