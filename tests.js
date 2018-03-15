@@ -79,3 +79,6 @@ assert("evals multiply", () => equals(eval("(5 3 -2 *)"), -30));
 assert("evals multiply with decimal", () => equals(eval("(7.5 -2 *)"), -15));
 assert("evals division", () => equals(eval("(6 2 /)"), 3));
 assert("evauls division with decimal", () => equals(eval("(7 2 /)"), 3.5));
+
+//recursion
+assert("addition recursively adds", () => equals(eval("((5 5 +) 5 +)"), 15));

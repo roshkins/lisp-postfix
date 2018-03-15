@@ -17,7 +17,6 @@ toExport.eval = function eval(statement) {
   if (statement[0] === "(" && statement[statement.length - 1] === ")") {
     //parse list
     const parsed = toExport.parse(statement);
-    console.log(parsed);
     if (parsed.length < 1) return undefined;
     //map eval to each element in list
     const evaled = parsed.map(toExport.eval);
