@@ -19,7 +19,10 @@ toExport.lookup = {
   },
   define: (symbol, value) => {
     toExport.lookup[dequoteHelper(symbol)] = value;
-  }
+  },
+  cons: (a, b) => [a, b],
+  car: consArray => consArray[0],
+  cdr: consArray => consArray[1]
 };
 
 toExport.lookupSymbol = function lookupSymbol(symbol) {

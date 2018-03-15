@@ -109,5 +109,5 @@ assert("define binds values to symbols", () => {
 
 assert("cons, car, cdr work", () => {
   eval("(box (3 4 cons) define)");
-  return equals(eval("(box car)"), 3) && equals(eval("(box cdr)", 4));
+  return equals(eval("(box car)"), 3) && equals(eval("(box cdr)"), 4);
 });
