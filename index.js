@@ -16,10 +16,23 @@ toExport.lookup = {
       //else return atom quoted
       return `${atom}'`;
     }
+  },
+  define: (symbol, value) => {
+    toExport.lookup[dequoteHelper(symbol)] = () => value;
   }
-  // "define": (atom )
 };
 
+function lookupSymbol(symbol) {
+  const unquotedSymbol = dequoteHelper(symbol);
+  return toExport.lookup[unquotedSymbol];
+}
+
+function dequoteHelper(symbol) {
+  if (symbol[symbol.length - 1] === "'") {
+    symbol = symbol.slice(0, symbol.length - 1);
+  }
+  return symbol;
+}
 //creates a function that maps over any number of arguments from 2 args
 function argsAccumulatorHelper(callback) {
   return (...args) => [...args].reduce(callback);
@@ -39,18 +52,12 @@ toExport.eval = function eval(statement) {
     //use javascript apply to pass in all other elements as parameters
     return executingFunction.apply(null, evaled);
   } else {
-    //check if quoted
-    //if quoted, remove quote and lookup no matter what
     let parsingStatement = statement.trim();
-    if (parsingStatement[0] === "'") {
-      parsingStatement = parsingStatement.slice(1);
-      return lookup[parsingStatement];
-    }
     //lookup and return function from lookup table, if none, try parsing it as a number, else return quoted atom
     return (
-      lookup[parsingStatement] ||
+      lookupSymbol(parsingStatement) ||
       Number(parsingStatement) ||
-      lookup["quote"](parsingStatement)
+      lookupSymbol("quote")(parsingStatement)
     );
   }
 };
