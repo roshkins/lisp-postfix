@@ -1,6 +1,7 @@
 const lisp = require("./index.js");
 const eval = lisp.eval;
 const parse = lisp.parse;
+const lookup = lisp.lookup;
 function assert(description, statementCb) {
   console.log(description);
   console.log(statementCb.toString());
@@ -63,5 +64,9 @@ assert("parses quote", () =>
 );
 
 assert("evals single number", () => equals(eval("2"), 2));
+assert("evals symbol not in lookup", () => equals(eval("pie"), "pie'"));
+
+//lookup
+assert("lookup computes addition properly", () => equals(lookup["+"](2, 3), 5));
 
 assert("evals simple addition", () => equals(eval("(2 3 +)"), 5));

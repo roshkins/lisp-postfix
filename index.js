@@ -1,7 +1,10 @@
 let toExport = {};
+//specify lookup table
+toExport.lookup = {
+  "+": (...args) => [...args].reduce((elm, acc) => acc + elm, 0)
+};
 toExport.eval = function eval(statement) {
-  //specify lookup table
-  let lookup = { "+": () => [...arguments].reduce((elm, acc) => acc + elm, 0) };
+  const lookup = toExport.lookup;
   //check if parens, signifying a list
   if (statement[0] === "(" && statement[statement.length - 1] === ")") {
     //parse list
@@ -14,13 +17,17 @@ toExport.eval = function eval(statement) {
     //pop last function from stack
     const executingFunction = evaled.pop();
     //use javascript apply to pass in all other elements as parameters
-    executingFunction.apply(this, evaled);
+    return executingFunction.apply(null, evaled);
   } else {
     //check if quoted
     //if quoted, return quoted symbol
     //else
-    //lookup and return function from lookup table
-    return lookup[statement.trim()];
+    //lookup and return function from lookup table, if none, try parsing it as a number, else return symbol
+    return (
+      lookup[statement.trim()] ||
+      Number(statement.trim()) ||
+      statement.trim() + "'"
+    );
   }
 };
 
