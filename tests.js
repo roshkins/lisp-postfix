@@ -8,7 +8,7 @@ function assert(description, statementCb) {
   if (statementCb()) {
     console.log("passed!");
   } else {
-    console.log("failed :(");
+    console.error("failed :(");
   }
   console.log("\n\n");
 }
@@ -70,3 +70,12 @@ assert("evals symbol not in lookup", () => equals(eval("pie"), "pie'"));
 assert("lookup computes addition properly", () => equals(lookup["+"](2, 3), 5));
 
 assert("evals simple addition", () => equals(eval("(2 3 +)"), 5));
+assert("evals multi-term addition", () => equals(eval("(2 3 5 +)"), 10));
+assert("evals simple subtraction", () => equals(eval("(2 3 -)"), -1));
+assert("evals multi-term subtraction with negative", () =>
+  equals(eval("(2 3 -4 -)"), 3)
+);
+assert("evals multiply", () => equals(eval("(5 3 -2 *)"), -30));
+assert("evals multiply with decimal", () => equals(eval("(7.5 -2 *)"), -15));
+assert("evals division", () => equals(eval("(6 2 /)"), 3));
+assert("evauls division with decimal", () => equals(eval("(7 2 /)"), 3.5));

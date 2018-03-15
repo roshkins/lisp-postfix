@@ -1,12 +1,15 @@
 let toExport = {};
 //specify lookup table
 toExport.lookup = {
-  "+": argsAccumulatorHelper((num1, num2) => num1 + num2)
+  "+": argsAccumulatorHelper((num1, num2) => num1 + num2),
+  "-": argsAccumulatorHelper((num1, num2) => num1 - num2),
+  "*": argsAccumulatorHelper((num1, num2) => num1 * num2),
+  "/": argsAccumulatorHelper((num1, num2) => num1 / num2)
 };
 
 //creates a function that maps over any number of arguments from 2 args
 function argsAccumulatorHelper(callback) {
-  return (...args) => [...args].reduce((elm, acc) => callback(acc, elm), 0);
+  return (...args) => [...args].reduce(callback);
 }
 toExport.eval = function eval(statement) {
   const lookup = toExport.lookup;
