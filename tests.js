@@ -43,6 +43,9 @@ function weakEquals(result, expected) {
   return result === expected;
 }
 
+function equalsEval(expression, result) {
+  return equals(eval(expression), result);
+}
 assert("eval runs and returns nil", () => equals(eval("()"), "()'"));
 
 assert("parses addition", () => {
@@ -110,4 +113,15 @@ assert("define binds values to symbols", () => {
 assert("cons, car, cdr work", () => {
   eval("(box (3 4 cons) define)");
   return equals(eval("(box car)"), 3) && equals(eval("(box cdr)"), 4);
+});
+
+//lists work
+
+assert("lists work", () => {
+  eval("(some-list (1 2 3)' define)");
+  return (
+    equalsEval("(some-list car)", 6) &&
+    equalsEval("(some-list cdr)", "(2 3)'") &&
+    equalsEval("(((some-list cdr) cdr) cdr)", "()'")
+  );
 });

@@ -18,12 +18,21 @@ toExport.lookup = {
     }
   },
   define: (symbol, value) => {
+    //if symbol
+    //dequote the value and parse it into a parsed array
+    if (isSymbol(value)) {
+      const parsedAndDequoted = parse(dequoteHelper(value));
+    }
     toExport.lookup[dequoteHelper(symbol)] = value;
   },
   cons: (a, b) => [a, b],
   car: consArray => consArray[0],
-  cdr: consArray => consArray[1]
+  cdr: consArray => [...consArray].slice(1)
 };
+
+function isSymbol(possibleSymbol) {
+  return possibleSymbol[possibleSymbol.length - 1] === "'";
+}
 
 toExport.lookupSymbol = function lookupSymbol(symbol) {
   const unquotedSymbol = dequoteHelper(symbol);
@@ -31,7 +40,7 @@ toExport.lookupSymbol = function lookupSymbol(symbol) {
 };
 
 function dequoteHelper(symbol) {
-  if (symbol[symbol.length - 1] === "'") {
+  if (isSymbol(symbol)) {
     symbol = symbol.slice(0, symbol.length - 1);
   }
   return symbol;
