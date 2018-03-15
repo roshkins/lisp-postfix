@@ -143,3 +143,13 @@ assert("lists work", () => {
     assertArray(eval("(((some-list cdr) cdr) cdr)"), [])
   );
 });
+
+//atoms exist
+
+assert("atoms exist", () => {
+  return (
+    equalsEval("(2 atom?)", true) &&
+    equalsEval("(2' atom?)", false) &&
+    equalsEval("((1 2) atom?)", false)
+  );
+});

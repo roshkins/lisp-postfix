@@ -87,10 +87,16 @@ toExport.eval = function eval(statement) {
     //map eval to each element in list
     const evaled = parsed.map(toExport.eval);
     console.log("evaled ", evaled);
-    //pop last function from stack
-    const executingFunction = evaled.pop();
-    //use javascript apply to pass in all other elements as parameters
-    return executingFunction.apply(null, evaled);
+    //if last element is a function, run it on everything
+    if (evaled[evaled.length - 1] instanceof Function) {
+      //pop last function from stack
+      const executingFunction = evaled.pop();
+      //use javascript apply to pass in all other elements as parameters
+      return executingFunction.apply(null, evaled);
+    } else {
+      //else return as array
+      return evaled;
+    }
   } else {
     let parsingStatement = statement.trim();
     console.log("Parsing statement", parsingStatement);
