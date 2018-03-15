@@ -36,12 +36,25 @@ toExport.lookup = {
   lambda: (args, code) => {
     return (...lambdaArgs) => {
       console.log(`lambdaArgs ${lambdaArgs}`);
-      let scope = Object.assign({}, toExport.lookup);
+      let oldScope = {};
       args.forEach(
-        (symbol, index) => (scope[dequoteHelper(symbol)] = lambdaArgs[index])
+        (symbol, index) =>
+          (oldScope[dequoteHelper(symbol)] =
+            toExport.lookup[dequoteHelper(symbol)])
       );
-      console.log("scope " + JSON.stringify(scope));
-      return toExport.eval("x", scope);
+      args.forEach(
+        (symbol, index) =>
+          (toExport.lookup[dequoteHelper(symbol)] = lambdaArgs[index])
+      );
+      console.log("scope " + JSON.stringify(toExport.lookup));
+      let retVal = toExport.eval(code);
+      //restore scope
+      args.forEach(
+        (symbol, index) =>
+          (toExport.lookup[dequoteHelper(symbol)] =
+            oldScope[dequoteHelper(symbol)])
+      );
+      return retVal;
     };
   }
 };
@@ -96,7 +109,7 @@ toExport.eval = function eval(statement, scopeObj) {
     const parsed = toExport.parse(statement);
     if (parsed.length < 1) return "()'";
     //map eval to each element in list
-    const evaled = parsed.map(toExport.eval);
+    const evaled = parsed.map(token => toExport.eval(token, scope));
     //if last element is a function, run it on everything
     if (evaled[evaled.length - 1] instanceof Function) {
       //if it's a lambda, store the code as a string
@@ -107,7 +120,9 @@ toExport.eval = function eval(statement, scopeObj) {
         //pop last function from stack
         const executingFunction = evaled.pop();
         //use javascript apply to pass in all other elements as parameters
-        return executingFunction.apply(null, evaled);
+        const evaledTo = executingFunction.apply(null, evaled);
+        console.log(JSON.stringify(evaledTo));
+        return evaledTo;
       }
     } else {
       //else return as array
