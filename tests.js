@@ -34,3 +34,11 @@ assert("parses addition", () => {
 assert("parses simple recursion", () =>
   assertArray(parse("((4 2 /) 3 +)"), ["(4 2 /)", "3", "+"])
 );
+
+assert("parses symbols", () =>
+  assertArray(parse("((2 3 +) 4 exp)"), ["(2 3 +)", "4", "exp"])
+);
+
+assert("parses quote", () =>
+  assertArray(parse("((2 3 +)' a' b)"), ["(2 3 +)'", "a'", "b"])
+);
