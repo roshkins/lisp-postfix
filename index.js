@@ -4,7 +4,10 @@ toExport.lookup = {
   "+": argsAccumulatorHelper((num1, num2) => num1 + num2),
   "-": argsAccumulatorHelper((num1, num2) => num1 - num2),
   "*": argsAccumulatorHelper((num1, num2) => num1 * num2),
-  "/": argsAccumulatorHelper((num1, num2) => num1 / num2)
+  "/": argsAccumulatorHelper((num1, num2) => num1 / num2),
+  "eq?": (num1, num2) => num1 === num2,
+  true: true,
+  false: false
 };
 
 //creates a function that maps over any number of arguments from 2 args
