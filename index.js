@@ -1,8 +1,13 @@
 let toExport = {};
 //specify lookup table
 toExport.lookup = {
-  "+": (...args) => [...args].reduce((elm, acc) => acc + elm, 0)
+  "+": argsAccumulatorHelper((num1, num2) => num1 + num2)
 };
+
+//creates a function that maps over any number of arguments from 2 args
+function argsAccumulatorHelper(callback) {
+  return (...args) => [...args].reduce((elm, acc) => callback(acc, elm), 0);
+}
 toExport.eval = function eval(statement) {
   const lookup = toExport.lookup;
   //check if parens, signifying a list
