@@ -5,10 +5,37 @@ toExport.eval = function eval(statement) {
 };
 
 toExport.parse = function parse(statement) {
-  //remove parens
+  let deparensStatement = statement;
+  //remove parens (assuming valid statement)
+  if (statement[0] === "(") {
+    deparensStatement = statement.slice(1, statement.length - 1);
+  }
   //loop through each character
   //keep a count of how many open - closed parens seen
-  //if 0 count parens && a is a space, push onto stack
+  let openMinusClosed = 0;
+  let token = "";
+  let stack = [];
+  deparensStatement.split("").forEach(char => {
+    switch (char) {
+      case "(":
+        openMinusClosed++;
+        break;
+      case ")":
+        openMinusClosed--;
+        break;
+      case " ":
+        //if 0 count parens && char is a space, push onto stack
+        if (openMinusClosed === 0) {
+          //push token
+          stack.push(token);
+          token = "";
+        }
+      default:
+        //add to current token
+        token += char;
+    }
+  });
   //return stack
+  return stack;
 };
 module.exports = toExport;
