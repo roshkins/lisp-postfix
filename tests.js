@@ -105,4 +105,9 @@ assert("define binds values to symbols", () => {
   return weakEquals(!!lisp.lookupSymbol("a'"), true) && equals(eval("a"), 5);
 });
 
-//quoted atoms lookup no matter what
+// cons, car, cdr
+
+assert("cons, car, cdr work", () => {
+  eval("(box (3 4 cons) define)");
+  return equals(eval("(box car)"), 3) && equals(eval("(box cdr)", 4));
+});
