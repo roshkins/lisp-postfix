@@ -161,3 +161,12 @@ assert("simple lambda works", () => {
   console.log(lisp.lookup);
   return equalsEval("(5 square)", 25);
 });
+
+assert("complex lambda works", () => {
+  eval("(divides_evenly? ((x y) ((x (x y /) *) y eq?) lambda) define)");
+  console.log(lisp.lookup);
+  return (
+    equalsEval("(5 2 divides_evenly?)", false) &&
+    equalsEval("(1 1 divides_evenly?)", true)
+  );
+});
