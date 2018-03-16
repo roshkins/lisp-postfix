@@ -105,7 +105,7 @@ function convertToString(statement) {
   return statement;
 }
 toExport.stringEval = function stringEval(statement) {
-  convertToString(toExport.eval(statement));
+  return convertToString(toExport.eval(statement));
 };
 toExport.eval = function eval(statement, scopeObj) {
   //return anything that is a primative
@@ -155,8 +155,8 @@ toExport.eval = function eval(statement, scopeObj) {
     }
 
     //lookup and return result of function from lookup table, if none, try parsing it as a number, else return quoted symbol
-    const assosciatedFn = toExport.lookupSymbol(parsingStatement, scope);
-    if (assosciatedFn) return assosciatedFn;
+    const assosciatedFn = toExport.lookupSymbol(parsingStatement);
+    if (assosciatedFn !== undefined) return assosciatedFn;
     return (
       Number(parsingStatement) ||
       toExport.lookupSymbol("quote", scope)(parsingStatement)
@@ -204,3 +204,28 @@ toExport.parse = function parse(statement) {
   return stack;
 };
 module.exports = toExport;
+
+console.log(
+  "Welcome to Rashi's super amazing lisp postfix interpreter! Entering a REPL now! Type .exit to exit."
+);
+
+const readline = require("readline");
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+function repl() {
+  rl.question(
+    "What is your bidding? (tell me your bidding with a lisp)",
+    bidding => {
+      // TODO: Log the answer in a database
+      if (bidding.trim() === ".exit") return rl.close();
+      console.log(toExport.stringEval(bidding));
+      repl();
+    }
+  );
+}
+
+repl();
