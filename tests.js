@@ -180,3 +180,7 @@ assert("cond chooses the correct symbol", () => {
     "three'"
   );
 });
+
+assert("false is false, not a symbol", () => {
+  return equalsEval("false", false);
+});
