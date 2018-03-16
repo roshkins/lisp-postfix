@@ -154,7 +154,7 @@ assert("atoms exist", () => {
   );
 });
 
-// lambdas work
+// lambdas should work
 
 assert("simple lambda works", () => {
   eval("(square ((x) (x x *) lambda) define)");
@@ -168,5 +168,15 @@ assert("complex lambda works", () => {
   return (
     equalsEval("(5 2 divides_evenly?)", false) &&
     equalsEval("(1 1 divides_evenly?)", true)
+  );
+});
+
+//cond should conditional a statement
+assert("cond chooses the correct symbol", () => {
+  eval("(a' 3 define)");
+  console.log(lisp.lookup);
+  return equalsEval(
+    "((((a 1 eq?) one') ((a 2 eq?) two') ((a 3 eq?) three') (else no-idea')) cond)",
+    "three'"
   );
 });

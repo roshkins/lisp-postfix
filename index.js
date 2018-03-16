@@ -56,6 +56,13 @@ toExport.lookup = {
       );
       return retVal;
     };
+  },
+  cond: clauses => {
+    for (clause of clauses) {
+      console.log(clause);
+      if (clause[0] === "else'") return clause[1];
+      if (clause[0]) return clause[1];
+    }
   }
 };
 
@@ -136,9 +143,15 @@ toExport.eval = function eval(statement, scopeObj) {
     console.log(statement);
     if (isSymbol(statement)) {
       console.log("is symbol");
-      const parsed = toExport.parse(statement.slice(0, statement.length - 1));
-      console.log("parsed statement", parsed);
-      return parsed.map(toExport.eval);
+      //if it's a list, we need to evaluate it so we can manipulate it
+      if (statement[0] === "(" && statement[statement.length - 2] === ")") {
+        const parsed = toExport.parse(statement.slice(0, statement.length - 1));
+        console.log("parsed statement", parsed);
+        return parsed.map(toExport.eval);
+      } else {
+        //if it's not a list, we should leave it as is
+        return statement;
+      }
     }
 
     //lookup and return result of function from lookup table, if none, try parsing it as a number, else return quoted symbol
