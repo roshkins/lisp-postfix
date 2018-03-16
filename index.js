@@ -1,4 +1,5 @@
 let toExport = {};
+const debug = false;
 //specify lookup table
 toExport.lookup = {
   "+": argsAccumulatorHelper((num1, num2) => num1 + num2),
@@ -27,7 +28,7 @@ toExport.lookup = {
       toExport.lookup[dequoteHelper(symbol)] = parsedAndDequoted;
     } else {
       toExport.lookup[dequoteHelper(symbol)] = value;
-      console.log(`Assigned ${symbol} ${value}`);
+      if (debug) console.log(`Assigned ${symbol} ${value}`);
     }
   },
   cons: (a, b) => [a, b],
@@ -35,7 +36,7 @@ toExport.lookup = {
   cdr: consArray => [...consArray].slice(1),
   lambda: (args, code) => {
     return (...lambdaArgs) => {
-      console.log(`lambdaArgs ${lambdaArgs}`);
+      if (debug) console.log(`lambdaArgs ${lambdaArgs}`);
       let oldScope = {};
       args.forEach(
         (symbol, index) =>
@@ -46,7 +47,7 @@ toExport.lookup = {
         (symbol, index) =>
           (toExport.lookup[dequoteHelper(symbol)] = lambdaArgs[index])
       );
-      console.log("scope " + JSON.stringify(toExport.lookup));
+      if (debug) console.log("scope " + JSON.stringify(toExport.lookup));
       let retVal = toExport.eval(code);
       //restore scope
       args.forEach(
@@ -59,7 +60,7 @@ toExport.lookup = {
   },
   cond: clauses => {
     for (clause of clauses) {
-      console.log(clause);
+      if (debug) console.log(clause);
       if (clause[0] === "else'") return clause[1];
       if (clause[0]) return clause[1];
     }
@@ -87,7 +88,7 @@ function dequoteHelper(symbol) {
 //creates a function that maps over any number of arguments from 2 args
 function argsAccumulatorHelper(callback) {
   return (...args) => {
-    console.log([...args]);
+    if (debug) console.log([...args]);
     return [...args].reduce(callback);
   };
 }
@@ -121,14 +122,14 @@ toExport.eval = function eval(statement, scopeObj) {
     if (evaled[evaled.length - 1] instanceof Function) {
       //if it's a lambda, store the code as a string
       if (parsed[parsed.length - 1] === "lambda") {
-        console.log("LABMDA " + parsed[parsed.length - 2]);
+        if (debug) console.log("LABMDA " + parsed[parsed.length - 2]);
         return toExport.lookupSymbol("lambda'", scope)(evaled[0], parsed[1]);
       } else {
         //pop last function from stack
         const executingFunction = evaled.pop();
         //use javascript apply to pass in all other elements as parameters
         const evaledTo = executingFunction.apply(null, evaled);
-        console.log(JSON.stringify(evaledTo));
+        if (debug) console.log(JSON.stringify(evaledTo));
         return evaledTo;
       }
     } else {
@@ -137,16 +138,16 @@ toExport.eval = function eval(statement, scopeObj) {
     }
   } else {
     let parsingStatement = statement.trim();
-    console.log("Parsing statement", parsingStatement);
+    if (debug) console.log("Parsing statement", parsingStatement);
 
     //parse symbol
-    console.log(statement);
+    if (debug) console.log(statement);
     if (isSymbol(statement)) {
-      console.log("is symbol");
+      if (debug) console.log("is symbol");
       //if it's a list, we need to evaluate it so we can manipulate it
       if (statement[0] === "(" && statement[statement.length - 2] === ")") {
         const parsed = toExport.parse(statement.slice(0, statement.length - 1));
-        console.log("parsed statement", parsed);
+        if (debug) console.log("parsed statement", parsed);
         return parsed.map(toExport.eval);
       } else {
         //if it's not a list, we should leave it as is
