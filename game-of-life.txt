@@ -1,0 +1,70 @@
+;cons makes a flat merged array
+;input bitmap
+;represent as list of lists
+
+((0 1 1 0 0 1 1 0)
+ (1 1 0 0 1 0 1 1)
+ (0 0 1 0 1 1 0 0))
+
+; rectangular, square
+
+;loop through bitmap element indices
+
+;iterRow go through each row and call iterCol on it
+
+;define lambda
+(_fillRows' ( (index' arraySoFar')
+  (
+    (
+      (
+        (index (bitmap' len) eq?)
+        ((index 1 -) (index' arraySoFar' cons) _fillRows) 
+          )
+        )
+      cond) lambda) define)
+;(
+;  iterRow
+;  (
+;  ()
+;    (
+;      (
+;          ((rowNum' (bitmap' len) eq?) bitmap)
+;          (else (row' (row 1 +) )
+;      )
+;      cond
+;    )
+;    lambda
+;  )
+  ;define
+  ;)
+
+(
+  iterCol
+  (
+    (rowNum')
+    (
+
+    )
+    lambda
+  )
+  define
+)
+(colNum' (col 1 +) define) lambda
+
+
+# add language function that gets an element at an index
+
+get count of live neighbors
+access element of array that corresponds to correct rule
+Number of Neighbors:
+             0      1     2       3
+liveList' = [dead', dead', live', live'] #if not in list, dead'
+deadList' = [dead', dead', dead', live'] #if not in lisd, dead'
+[dead', dead', live', ]
+
+apply if it matches and exit loop
+# subtract and add 1 in two dimensions
+# implement getter from bitmap in lisp
+# setter from bitmap in lisp
+# length from bitmap in lisp => javascript
+output new bitmap

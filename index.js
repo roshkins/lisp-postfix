@@ -32,7 +32,13 @@ toExport.lookup = {
       if (debug) console.log(`Assigned ${symbol} ${value}`);
     }
   },
-  cons: (a, b) => [a, b],
+  cons: (a, b) => {
+    if (a instanceof Array) {
+      return a.concat(b);
+    } else if (b instanceof Array) {
+      return b.concat(a);
+    } else return [a, b];
+  },
   car: consArray => toExport.eval(consArray[0]),
   cdr: consArray => [...consArray].slice(1),
   lambda: (args, code) => {

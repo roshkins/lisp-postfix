@@ -123,6 +123,10 @@ assert("cons, car, cdr work", () => {
   return equals(eval("(box car)"), 3) && assertArray(eval("(box cdr)"), [4]);
 });
 
+assert("add element with cons", () => {
+  return assertArray(eval("((3 4) 3 cons)"), [3, 4, 3]);
+});
+
 //symbols
 assert("symbols are symbols", () => {
   return equals(lisp.isSymbol("(1 2 3)'"), true);
