@@ -17,11 +17,15 @@
   (
     (
       (
-        (index (bitmap' len) eq?)
-        ((index 1 -) (index' arraySoFar' cons) _fillRows) 
-          )
-        )
-      cond) lambda) define)
+        (index (bitmap len) eq?)
+        (index arraySoFar cons)
+      )
+      (
+        else
+        ((index 1 -) (index arraySoFar cons) _fillRows)
+      )
+    )
+  cond) lambda) define)
 ;(
 ;  iterRow
 ;  (

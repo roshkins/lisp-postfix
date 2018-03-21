@@ -213,3 +213,5 @@ assert("fibbonacci", () => {
 assert("make sure 0 is a number and not quoted", () => {
   return equalsEval("0", 0);
 });
+
+//length of list and list of list is retrieved

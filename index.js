@@ -7,9 +7,10 @@ toExport.lookup = {
   "*": argsAccumulatorHelper((num1, num2) => num1 * num2),
   "/": argsAccumulatorHelper((num1, num2) => num1 / num2),
   "eq?": (num1, num2) => num1 === num2,
-  log: console.log,
+  log: (...args) => console.log(args),
   true: true,
   false: false,
+  len: list => list.length,
   quote: item => {
     if (item instanceof Array) return symbolizeArray(item);
     if (item[item.length - 1] === "'") {
