@@ -1,5 +1,5 @@
 let toExport = {};
-const debug = false;
+const debug = true;
 //specify lookup table
 toExport.lookup = {
   "+": argsAccumulatorHelper((num1, num2) => num1 + num2),
@@ -7,6 +7,7 @@ toExport.lookup = {
   "*": argsAccumulatorHelper((num1, num2) => num1 * num2),
   "/": argsAccumulatorHelper((num1, num2) => num1 / num2),
   "eq?": (num1, num2) => num1 === num2,
+  log: console.log,
   true: true,
   false: false,
   quote: item => {
@@ -37,17 +38,21 @@ toExport.lookup = {
   lambda: (args, code) => {
     return (...lambdaArgs) => {
       if (debug) console.log(`lambdaArgs ${lambdaArgs}`);
+      //create new temp scope
       let oldScope = {};
+      //go through all arguments given when lambda was defined
       args.forEach(
         (symbol, index) =>
           (oldScope[dequoteHelper(symbol)] =
             toExport.lookup[dequoteHelper(symbol)])
       );
+      //put the new values in the scope
       args.forEach(
         (symbol, index) =>
           (toExport.lookup[dequoteHelper(symbol)] = lambdaArgs[index])
       );
       if (debug) console.log("scope " + JSON.stringify(toExport.lookup));
+      //run code
       let retVal = toExport.eval(code);
       //restore scope
       args.forEach(
@@ -59,10 +64,25 @@ toExport.lookup = {
     };
   },
   cond: clauses => {
-    for (clause of clauses) {
+    //parse clauses first
+    const parsedClauses = clauses.map(toExport.parse);
+    console.log("parsedClauses " + JSON.stringify(parsedClauses));
+    for (clause of parsedClauses) {
       if (debug) console.log(clause);
-      if (clause[0] === "else'") return clause[1];
-      if (clause[0]) return clause[1];
+      if (clause[0] === "else") {
+        console.log("in else clause");
+        console.log("lookup");
+        console.log(toExport.lookup);
+        console.log("clause return " + toExport.eval(clause[1]));
+        return toExport.eval(clause[1]);
+      }
+      if (toExport.eval(clause[0])) {
+        console.log("in clause that executed" + clause[0]);
+        console.log("lookup");
+        console.log(toExport.lookup);
+        console.log("clause return " + toExport.eval(clause[1]));
+        return toExport.eval(clause[1]);
+      }
     }
   }
 };
@@ -100,6 +120,13 @@ function convert(statement) {
   if (statement instanceof Array) return Array;
   return false;
 }
+function isConvertable(statement) {
+  return (
+    typeof statement === "number" ||
+    !isNaN(Number(statement)) ||
+    statement instanceof Array
+  );
+}
 function convertToString(statement) {
   if (statement instanceof Array) return symbolizeArray(statement);
   if (typeof statement === "number") return "" + statement;
@@ -109,21 +136,30 @@ toExport.stringEval = function stringEval(statement) {
   return convertToString(toExport.eval(statement));
 };
 toExport.eval = function eval(statement, scopeObj) {
-  //return anything that is a primative
-  if (convert(statement)) return convert(statement);
+  //return anything that is already a javascript primative like an array
+  if (isConvertable(statement)) return convert(statement);
   const scope = Object.assign({}, toExport.lookup, scopeObj);
   //check if parens, signifying a list
   if (statement[0] === "(" && statement[statement.length - 1] === ")") {
     const parsed = toExport.parse(statement);
     if (parsed.length < 1) return "()'";
-    //map eval to each element in list
-    const evaled = parsed.map(token => toExport.eval(token, scope));
+    //map eval to each element in list if not conditional
+    let evaled;
+    if (parsed[parsed.length - 1] !== "cond")
+      evaled = parsed.map(token => toExport.eval(token, scope));
+    else {
+      const parsedCond = toExport.parse(parsed[0]);
+      console.log("found cond" + JSON.stringify(parsedCond));
+      return toExport.lookupSymbol("cond'")(parsedCond);
+    }
     //if last element is a function, run it on everything
     if (evaled[evaled.length - 1] instanceof Function) {
       //if it's a lambda, store the code as a string
+      console.log("last element of parsed" + parsed[parsed.length - 1]);
+      console.log("parsed: " + JSON.stringify(parsed));
       if (parsed[parsed.length - 1] === "lambda") {
         if (debug) console.log("LABMDA " + parsed[parsed.length - 2]);
-        return toExport.lookupSymbol("lambda'", scope)(evaled[0], parsed[1]);
+        return toExport.lookupSymbol("lambda'")(evaled[0], parsed[1]);
       } else {
         //pop last function from stack
         const executingFunction = evaled.pop();
@@ -146,6 +182,7 @@ toExport.eval = function eval(statement, scopeObj) {
       if (debug) console.log("is symbol");
       //if it's a list, we need to evaluate it so we can manipulate it
       if (statement[0] === "(" && statement[statement.length - 2] === ")") {
+        //takes of last '
         const parsed = toExport.parse(statement.slice(0, statement.length - 1));
         if (debug) console.log("parsed statement", parsed);
         return parsed.map(toExport.eval);
@@ -155,11 +192,11 @@ toExport.eval = function eval(statement, scopeObj) {
       }
     }
 
-    //lookup and return result of function from lookup table, if none, try parsing it as a number, else return quoted symbol
+    //lookup and return result of function from lookup table, if none, try parsing it as a number "   2 ", else return quoted symbol
     const assosciatedFn = toExport.lookupSymbol(parsingStatement);
     if (assosciatedFn !== undefined) return assosciatedFn;
     return (
-      Number(parsingStatement) ||
+      // Number(parsingStatement) ||
       toExport.lookupSymbol("quote", scope)(parsingStatement)
     );
   }
@@ -192,6 +229,7 @@ toExport.parse = function parse(statement) {
           //push token
           stack.push(token);
           token = "";
+          //skip space
           skip = true;
         }
         break;

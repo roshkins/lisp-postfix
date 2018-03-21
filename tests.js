@@ -181,6 +181,31 @@ assert("cond chooses the correct symbol", () => {
   );
 });
 
+// assert("cond doesn't execute false clauses", () => {
+//   eval("(a' 3 define)");
+//   return equalsEval("((1 1 eq?) yay') ((1 2 eq?) (b' 3 define) cond)");
+// });
+
 assert("false is false, not a symbol", () => {
   return equalsEval("false", false);
+});
+
+//does fibbonacci
+
+assert("fibbonacci", () => {
+  //if(n == 0) return 0;
+  eval(
+    // "(fibbonacci' ((n) (((((n 0 eq?) 0) ((n 1 eq?) 1) (else (((n 1 -) fibbonacci) ((n 2 -) fibbonacci) +)))) cond) lambda) define)"
+    // "(fibbonacci' ((n) ((((n 0 eq?) 0) ((n 1 eq?) 1) (else (((n 1 -) fibbonacci) ((n 2 -) fibbonacci) +)) cond) lambda) define)"
+    "(fibbonacci' ((n) ((((n 0 eq?) 0) ((n 1 eq?) 1) (else (((n 1 -) fibbonacci) ((n 2 -) fibbonacci) +))) cond) lambda) define)"
+  );
+  console.log(eval("(0 fibbonacci)"));
+
+  return equalsEval("(4 fibbonacci)", 2); // && equalsEval("(3 fibbonacci)", 2);
+});
+
+// make sure 0 is a number and not quoted
+
+assert("make sure 0 is a number and not quoted", () => {
+  return equalsEval("0", 0);
 });
