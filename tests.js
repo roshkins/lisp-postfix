@@ -221,9 +221,18 @@ assert("length of list and list of list is retrieved", () => {
 
 assert("creates a range of values", () => {
   eval(
-    "(_fillRows' ((index' arraySoFar') ((((index 0 eq?) (index arraySoFar cons)) (else ((index 1 -) (index arraySoFar cons) _fillRows))) cond) lambda) define)"
+    "(_fillRange' ((index' arraySoFar') ((((index 0 eq?) (index arraySoFar cons)) (else ((index 1 -) (index arraySoFar cons) _fillRange))) cond) lambda) define)"
   );
 
-  eval("(fillRows ((rowCount') (rowCount ()' _fillRows) lambda) define)");
-  return assertArray(eval("(6 fillRows)"), [6, 5, 4, 3, 2, 1, 0]);
+  eval("(fillRange ((rowCount') (rowCount ()' _fillRange) lambda) define)");
+  return assertArray(eval("(6 fillRange)"), [0, 1, 2, 3, 4, 5, 6]);
+});
+
+assert("map a lambda to a list", () => {
+  eval("(testFn' ((a') (a 2 *) lambda) define)");
+  return assertArray(eval("((1 2 3) testFn map)"), [2, 4, 6]);
+});
+
+assert("get element from list at index", () => {
+  return equalsEval("((1 2 3)' 0 get)", 1) && equalsEval("((1 2 3)' 1 get)", 2);
 });

@@ -12,7 +12,7 @@
 
 ;iterRow go through each row and call iterCol on it
 
-;define lambda
+;define an iterator
 (_fillRows' ( (index' arraySoFar')
   (
     (
@@ -41,19 +41,19 @@
 ;  )
   ;define
   ;)
-
-(
-  iterCol
-  (
-    (rowNum')
-    (
-
-    )
-    lambda
-  )
-  define
-)
-(colNum' (col 1 +) define) lambda
+;
+;(
+;  iterCol
+;  (
+;    (rowNum')
+;    (
+;
+;    )
+;    lambda
+;  )
+;  define
+;)
+;(colNum' (col 1 +) define) lambda
 
 
 # add language function that gets an element at an index

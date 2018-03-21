@@ -21,6 +21,10 @@ toExport.lookup = {
       return `${item}'`;
     }
   },
+  map: (list, fn) => {
+    return list.map(element => fn(element));
+  },
+  get: (list, index) => list[index],
   "atom?": item => !isSymbol(item) && item.length === undefined,
   define: (symbol, value) => {
     //if symbol
@@ -36,9 +40,9 @@ toExport.lookup = {
   cons: (a, b) => {
     if (a instanceof Array) {
       return a.concat(b);
-    } else if (b instanceof Array) {
-      return b.concat(a);
-    } else return [a, b];
+    } else {
+      return [a].concat(b);
+    }
   },
   car: consArray => toExport.eval(consArray[0]),
   cdr: consArray => [...consArray].slice(1),
