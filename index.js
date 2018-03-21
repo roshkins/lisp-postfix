@@ -68,20 +68,23 @@ toExport.lookup = {
     const parsedClauses = clauses.map(toExport.parse);
     console.log("parsedClauses " + JSON.stringify(parsedClauses));
     for (clause of parsedClauses) {
-      if (debug) console.log(clause);
+      if (debug) console.log("clause" + clause);
       if (clause[0] === "else") {
         console.log("in else clause");
         console.log("lookup");
         console.log(toExport.lookup);
-        console.log("clause return " + toExport.eval(clause[1]));
-        return toExport.eval(clause[1]);
+
+        const returnedVal = toExport.eval(clause[1]);
+        console.log("clause return " + returnedVal);
+        return returnedVal;
       }
       if (toExport.eval(clause[0])) {
         console.log("in clause that executed" + clause[0]);
         console.log("lookup");
         console.log(toExport.lookup);
-        console.log("clause return " + toExport.eval(clause[1]));
-        return toExport.eval(clause[1]);
+        const returnedVal = toExport.eval(clause[1]);
+        console.log("clause return " + returnedVal);
+        return returnedVal;
       }
     }
   }
@@ -108,7 +111,7 @@ function dequoteHelper(symbol) {
 //creates a function that maps over any number of arguments from 2 args
 function argsAccumulatorHelper(callback) {
   return (...args) => {
-    if (debug) console.log([...args]);
+    if (debug) console.log("args in accumulator helper ", [...args]);
     return [...args].reduce(callback);
   };
 }
@@ -145,29 +148,37 @@ toExport.eval = function eval(statement, scopeObj) {
     if (parsed.length < 1) return "()'";
     //map eval to each element in list if not conditional
     let evaled;
-    if (parsed[parsed.length - 1] !== "cond")
-      evaled = parsed.map(token => toExport.eval(token, scope));
-    else {
-      const parsedCond = toExport.parse(parsed[0]);
-      console.log("found cond" + JSON.stringify(parsedCond));
-      return toExport.lookupSymbol("cond'")(parsedCond);
+    switch (parsed[parsed.length - 1]) {
+      case "cond":
+        const parsedCond = toExport.parse(parsed[0]);
+        console.log("found cond" + JSON.stringify(parsedCond));
+        return toExport.lookupSymbol("cond'")(parsedCond);
+        break;
+      case "lambda":
+        if (debug) console.log("LABMDA " + parsed[parsed.length - 2]);
+        return toExport.lookupSymbol("lambda'")(
+          toExport.eval(parsed[0]),
+          parsed[1]
+        );
+      default:
+        evaled = parsed.map(token => toExport.eval(token, scope));
     }
+
     //if last element is a function, run it on everything
     if (evaled[evaled.length - 1] instanceof Function) {
       //if it's a lambda, store the code as a string
       console.log("last element of parsed" + parsed[parsed.length - 1]);
       console.log("parsed: " + JSON.stringify(parsed));
-      if (parsed[parsed.length - 1] === "lambda") {
-        if (debug) console.log("LABMDA " + parsed[parsed.length - 2]);
-        return toExport.lookupSymbol("lambda'")(evaled[0], parsed[1]);
-      } else {
-        //pop last function from stack
-        const executingFunction = evaled.pop();
-        //use javascript apply to pass in all other elements as parameters
-        const evaledTo = executingFunction.apply(null, evaled);
-        if (debug) console.log(JSON.stringify(evaledTo));
-        return evaledTo;
-      }
+
+      //pop last function from stack
+      const executingFunction = evaled.pop();
+      //use javascript apply to pass in all other elements as parameters
+      const evaledTo = executingFunction.apply(null, evaled);
+      if (debug)
+        console.log(
+          "return value of evaluated method" + JSON.stringify(evaledTo)
+        );
+      return evaledTo;
     } else {
       //else return as array
       return evaled;
@@ -177,7 +188,7 @@ toExport.eval = function eval(statement, scopeObj) {
     if (debug) console.log("Parsing statement", parsingStatement);
 
     //parse symbol
-    if (debug) console.log(statement);
+    if (debug) console.log("statement" + statement);
     if (isSymbol(statement)) {
       if (debug) console.log("is symbol");
       //if it's a list, we need to evaluate it so we can manipulate it

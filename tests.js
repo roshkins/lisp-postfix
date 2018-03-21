@@ -201,7 +201,7 @@ assert("fibbonacci", () => {
   );
   console.log(eval("(0 fibbonacci)"));
 
-  return equalsEval("(4 fibbonacci)", 2); // && equalsEval("(3 fibbonacci)", 2);
+  return equalsEval("(3 fibbonacci)", 2); // && equalsEval("(3 fibbonacci)", 2);
 });
 
 // make sure 0 is a number and not quoted
