@@ -214,6 +214,16 @@ assert("make sure 0 is a number and not quoted", () => {
   return equalsEval("0", 0);
 });
 
+//more lists
 assert("length of list and list of list is retrieved", () => {
   return equalsEval("((0 1 2) len)", 3) && equalsEval("((2 (3 5 6) 4) len)", 3);
+});
+
+assert("creates a range of values", () => {
+  eval(
+    "(_fillRows' ((index' arraySoFar') ((((index 0 eq?) (index arraySoFar cons)) (else ((index 1 -) (index arraySoFar cons) _fillRows))) cond) lambda) define)"
+  );
+
+  eval("(fillRows ((rowCount') (rowCount ()' _fillRows) lambda) define)");
+  return assertArray(eval("(6 fillRows)"), [6, 5, 4, 3, 2, 1, 0]);
 });
