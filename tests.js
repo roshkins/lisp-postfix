@@ -214,4 +214,6 @@ assert("make sure 0 is a number and not quoted", () => {
   return equalsEval("0", 0);
 });
 
-//length of list and list of list is retrieved
+assert("length of list and list of list is retrieved", () => {
+  return equalsEval("((0 1 2) len)", 3) && equalsEval("((2 (3 5 6) 4) len)", 3);
+});
