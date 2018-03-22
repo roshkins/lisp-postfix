@@ -85,13 +85,13 @@
 
 ;if row and col equals 1 ignore if bitRow or bitCol is <= 0 ignore
 ;(((((neiRow 1 eq?) 1 eq?) 0) (else (((bitRow (neiRow 1 -) -) (bitCol (neiCol 1 -) -) getElm))) cond)
-(checkLive' ((bitRow' neiRow' bitCol' neiCol') ((((((neiRow 1 eq?) 1 eq?) 0) () (else (((bitRow (neiRow 1 -) -) (bitCol (neiCol 1 -) -) getElm))) cond)) lambda) define)
+(checkLive' ((bitRow' neiRow' bitCol' neiCol') ((((((neiRow 1 eq?) 1 eq?) 0) ((neiRow 0 lt?) 0) ((neiCol 0 lt?) 0) (else (((bitRow (neiRow 1 -) -) (bitCol (neiCol 1 -) -) getElm))) cond)) lambda) define)
 ;each neighborhood member index gets added to the total if it doesn't have a 1.
 ;neiRow and neiCol must subtract 1 so that it is centered
 ;if it's live, add 1 elm to list
 ;else dont
 (liveNeighbors' ((bitRow' bitCol') (neighborhood ((neiRow' neiCol') (liveCount' (liveCount (bitRow neiRow bitCol neiCol checkLive) +) define) lambda) 2d_each) lambda) define)
-
+liveCount
 ;checkRules => takes the bitmap and loops through all the rules
 (checkRules' ((rowIndex' colIndex') (rowIndex colIndex) lambda) define)
 ;define parseRow, which takes in a row index and generates all the column indices
