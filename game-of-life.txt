@@ -56,31 +56,36 @@
 ;(colNum' (col 1 +) define) lambda
 
 
+
+;# add language function that gets an element at an index
+
+;get count of live neighbors
+;access element of array that corresponds to correct rule
+;Number of Neighbors:
+;             0      1     2       3
+;liveList' = [dead', dead', live', live'] #if not in list, dead'
+;deadList' = [dead', dead', dead', live'] #if not in lisd, dead'
+;[dead', dead', live', ]
+;
+;apply if it matches and exit loop
+;# subtract and add 1 in two dimensions
+;# implement getter from bitmap in lisp
+;# setter from bitmap in lisp
+;# length from bitmap in lisp => javascript
+;output new bitmap
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(bitmap ((0 1 1 0 0 1 1 0) (1 1 0 0 1 0 1 1) (0 0 1 0 1 1 0 0)) define)
+
+(bitmap' ((0 1 1 0 0 1 1 0) (1 1 0 0 1 0 1 1) (0 0 1 0 1 1 0 0)) define)
+(neighborhood' ((0 0 0) (0 1 0) (0 0 0)) define)
+;(liveNeigbors' (row col) (parse) lambda)
 
 ;checkRules => takes the bitmap and loops through all the rules
 (checkRules' ((rowIndex' colIndex') (rowIndex colIndex) lambda) define)
 ;define parseRow, which takes in a row index and generates all the column indices
-(parseRow' ((rowIndex') (((((bitmap rowIndex get) len) 1 -) fillRange) ((colIndex) (rowIndex colIndex checkRules) lambda) map) lambda) define)
+(parseRow' ((rowIndex' bitmap' callback') (((((bitmap rowIndex get) len) 1 -) fillRange) ((colIndex) (rowIndex colIndex callback) lambda) map) lambda) define)
 ;map each row index to a list of column indices
-((((bitmap len) 1 -) fillRange) ((rowIndex') (rowIndex parseRow) lambda) map)
+(2d_each' ((bitmap' callback') ((((bitmap len) 1 -) fillRange) ((rowIndex') (rowIndex bitmap callback parseRow) lambda) map) lambda) define)
 
-
-# add language function that gets an element at an index
-
-get count of live neighbors
-access element of array that corresponds to correct rule
-Number of Neighbors:
-             0      1     2       3
-liveList' = [dead', dead', live', live'] #if not in list, dead'
-deadList' = [dead', dead', dead', live'] #if not in lisd, dead'
-[dead', dead', live', ]
-
-apply if it matches and exit loop
-# subtract and add 1 in two dimensions
-# implement getter from bitmap in lisp
-# setter from bitmap in lisp
-# length from bitmap in lisp => javascript
-output new bitmap
+(bitmap checkRules 2d_each)

@@ -259,3 +259,18 @@ assert("two dimensional iteration", () => {
     ]
   );
 });
+
+assert("two dimensional iteration can be abstracted", () => {
+  [
+    "(bitmap' ((0 1 1 0 0 1 1 0) (1 1 0 0 1 0 1 1) (0 0 1 0 1 1 0 0)) define)",
+    "(checkRules' ((rowIndex' colIndex') (rowIndex colIndex) lambda) define)",
+    "(parseRow' ((rowIndex' bitmap' callback') (((((bitmap rowIndex get) len) 1 -) fillRange) ((colIndex) (rowIndex colIndex callback) lambda) map) lambda) define)",
+    "(2d_each' ((bitmap' callback') ((((bitmap len) 1 -) fillRange) ((rowIndex') (rowIndex bitmap callback parseRow) lambda) map) lambda) define)"
+  ].map(eval);
+
+  return assertArray(eval("(bitmap checkRules 2d_each)"), [
+    [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7]],
+    [[1, 0], [1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7]],
+    [[2, 0], [2, 1], [2, 2], [2, 3], [2, 4], [2, 5], [2, 6], [2, 7]]
+  ]);
+});
