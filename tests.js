@@ -22,13 +22,14 @@ function assert(description, statementCb) {
 }
 
 function assertArray(array, testArray) {
+  if (!(array instanceof Array)) return array === testArray;
   console.log(
     `Array ${JSON.stringify(array)} compared to testArray ${JSON.stringify(
       testArray
     )}`
   );
   return (
-    array.every((item, index) => item === testArray[index]) &&
+    array.every((item, index) => assertArray(item, testArray[index])) &&
     array.length === testArray.length
   );
 }
@@ -235,4 +236,26 @@ assert("map a lambda to a list", () => {
 
 assert("get element from list at index", () => {
   return equalsEval("((1 2 3)' 0 get)", 1) && equalsEval("((1 2 3)' 1 get)", 2);
+});
+
+assert("two dimensional iteration", () => {
+  eval(
+    "(bitmap ((0 1 1 0 0 1 1 0) (1 1 0 0 1 0 1 1) (0 0 1 0 1 1 0 0)) define)"
+  );
+  eval(
+    "(checkRules' ((rowIndex' colIndex') (rowIndex colIndex) lambda) define)"
+  );
+  eval(
+    "(parseRow' ((rowIndex') (((((bitmap rowIndex get) len) 1 -) fillRange) ((colIndex) (rowIndex colIndex checkRules) lambda) map) lambda) define)"
+  );
+  return assertArray(
+    eval(
+      "((((bitmap len) 1 -) fillRange) ((rowIndex') (rowIndex parseRow) lambda) map)"
+    ),
+    [
+      [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7]],
+      [[1, 0], [1, 1], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [1, 7]],
+      [[2, 0], [2, 1], [2, 2], [2, 3], [2, 4], [2, 5], [2, 6], [2, 7]]
+    ]
+  );
 });

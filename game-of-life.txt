@@ -56,6 +56,18 @@
 ;(colNum' (col 1 +) define) lambda
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(bitmap ((0 1 1 0 0 1 1 0) (1 1 0 0 1 0 1 1) (0 0 1 0 1 1 0 0)) define)
+
+;checkRules => takes the bitmap and loops through all the rules
+(checkRules' ((rowIndex' colIndex') (rowIndex colIndex) lambda) define)
+;define parseRow, which takes in a row index and generates all the column indices
+(parseRow' ((rowIndex') (((((bitmap rowIndex get) len) 1 -) fillRange) ((colIndex) (rowIndex colIndex checkRules) lambda) map) lambda) define)
+;map each row index to a list of column indices
+((((bitmap len) 1 -) fillRange) ((rowIndex') (rowIndex parseRow) lambda) map)
+
+
 # add language function that gets an element at an index
 
 get count of live neighbors
