@@ -79,7 +79,18 @@
 
 (bitmap' ((0 1 1 0 0 1 1 0) (1 1 0 0 1 0 1 1) (0 0 1 0 1 1 0 0)) define)
 (neighborhood' ((0 0 0) (0 1 0) (0 0 0)) define)
-;(liveNeigbors' (row col) (parse) lambda)
+(getElm' ((row col twodArray) ((twodArray row get) col get) lambda) define)
+(_counter' ((count' testCb' resultCb') ((((testCb) ) cond) lambda) define)
+(counter' ((testCb' resultCb') () lambda) define)
+
+;if row and col equals 1 ignore if bitRow or bitCol is <= 0 ignore
+;(((((neiRow 1 eq?) 1 eq?) 0) (else (((bitRow (neiRow 1 -) -) (bitCol (neiCol 1 -) -) getElm))) cond)
+(checkLive' ((bitRow' neiRow' bitCol' neiCol') ((((((neiRow 1 eq?) 1 eq?) 0) () (else (((bitRow (neiRow 1 -) -) (bitCol (neiCol 1 -) -) getElm))) cond)) lambda) define)
+;each neighborhood member index gets added to the total if it doesn't have a 1.
+;neiRow and neiCol must subtract 1 so that it is centered
+;if it's live, add 1 elm to list
+;else dont
+(liveNeighbors' ((bitRow' bitCol') (neighborhood ((neiRow' neiCol') (liveCount' (liveCount (bitRow neiRow bitCol neiCol checkLive) +) define) lambda) 2d_each) lambda) define)
 
 ;checkRules => takes the bitmap and loops through all the rules
 (checkRules' ((rowIndex' colIndex') (rowIndex colIndex) lambda) define)

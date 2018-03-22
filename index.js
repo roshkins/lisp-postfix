@@ -7,6 +7,7 @@ toExport.lookup = {
   "*": argsAccumulatorHelper((num1, num2) => num1 * num2),
   "/": argsAccumulatorHelper((num1, num2) => num1 / num2),
   "eq?": (num1, num2) => num1 === num2,
+  "lt?": (num1, num2) => num1 < num2,
   log: (...args) => console.log(args),
   true: true,
   false: false,
