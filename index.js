@@ -244,7 +244,7 @@ toExport.parse = function parse(statement) {
   let openMinusClosed = 0;
   let token = "";
   let stack = [];
-  deparensStatement.split("").forEach(char => {
+  deparensStatement.split("").forEach((char, idx) => {
     //skip char in token
     let skip = false;
     switch (char) {
@@ -256,7 +256,7 @@ toExport.parse = function parse(statement) {
         break;
       case " ":
         //if 0 count parens && char is a space, push onto stack
-        if (openMinusClosed === 0) {
+        if (openMinusClosed === 0 && deparensStatement[idx+1] !== " ") {
           //push token
           stack.push(token);
           token = "";
