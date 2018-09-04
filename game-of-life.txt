@@ -80,23 +80,20 @@
 (bitmap' ((0 1 1 0 0 1 1 0) (1 1 0 0 1 0 1 1) (0 0 1 0 1 1 0 0)) define)
 (neighborhood' ((0 0 0) (0 1 0) (0 0 0)) define)
 (getElm' ((row col twodArray) ((twodArray row get) col get) lambda) define)
-(_counter' ((count' testCb' resultCb') ((((testCb) ) cond) lambda) define)
-(counter' ((testCb' resultCb') () lambda) define)
 
 ;if row and col equals 1 ignore if bitRow or bitCol is <= 0 ignore
 ;(((((neiRow 1 eq?) 1 eq?) 0) (else (((bitRow (neiRow 1 -) -) (bitCol (neiCol 1 -) -) getElm))) cond)
-(checkLive' ((bitRow' neiRow' bitCol' neiCol') ((((((neiRow 1 eq?) 1 eq?) 0) ((neiRow 0 lt?) 0) ((neiCol 0 lt?) 0) (else (((bitRow (neiRow 1 -) -) (bitCol (neiCol 1 -) -) getElm))) cond)) lambda) define)
+(checkLive' ((bitRow' neiRow' bitCol' neiCol') ((((((neiRow 1 eq?) (neiCol 1 eq?) and) 0) ((neiRow 0 lt?) 0) ((neiCol 0 lt?) 0) (else (((bitRow (neiRow 1 -) -) (bitCol (neiCol 1 -) -) bitmap getElm))) cond)) lambda) define)
 ;each neighborhood member index gets added to the total if it doesn't have a 1.
 ;neiRow and neiCol must subtract 1 so that it is centered
 ;if it's live, add 1 elm to list
 ;else dont
 (liveNeighbors' ((bitRow' bitCol') (neighborhood ((neiRow' neiCol') (liveCount' (liveCount (bitRow neiRow bitCol neiCol checkLive) +) define) lambda) 2d_each) lambda) define)
-liveCount
 ;checkRules => takes the bitmap and loops through all the rules
-(checkRules' ((rowIndex' colIndex') (rowIndex colIndex) lambda) define)
+;(checkRules' ((rowIndex' colIndex') (rowIndex colIndex liveNeighbors) lambda) define)
 ;define parseRow, which takes in a row index and generates all the column indices
 (parseRow' ((rowIndex' bitmap' callback') (((((bitmap rowIndex get) len) 1 -) fillRange) ((colIndex) (rowIndex colIndex callback) lambda) map) lambda) define)
 ;map each row index to a list of column indices
-(2d_each' ((bitmap' callback') ((((bitmap len) 1 -) fillRange) ((rowIndex') (rowIndex bitmap callback parseRow) lambda) map) lambda) define)
-
-(bitmap checkRules 2d_each)
+(2d_map' ((bitmap' callback') ((((bitmap len) 1 -) fillRange) ((rowIndex') (rowIndex bitmap callback parseRow) lambda) map) lambda) define)
+(2d_reduce' ((bitmap' callback' accumulator') ((((bitmap len) 1 -) fillRange) ((rowIndex') (rowIndex bitmap callback accumulator parseRowReduce) lambda) accumulator reduce) lambda) define)
+(bitmap liveNeighbors 2d_map)

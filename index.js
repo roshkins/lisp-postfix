@@ -8,6 +8,12 @@ toExport.lookup = {
   "/": argsAccumulatorHelper((num1, num2) => num1 / num2),
   "eq?": (num1, num2) => num1 === num2,
   "lt?": (num1, num2) => num1 < num2,
+  and: argsAccumulatorHelper(
+    (expression1, expression2) => expression1 && expression2
+  ),
+  or: argsAccumulatorHelper(
+    (expression1, expression2) => expression1 || expression2
+  ),
   log: (...args) => console.log(args),
   true: true,
   false: false,
@@ -25,6 +31,8 @@ toExport.lookup = {
   map: (list, fn) => {
     return list.map(element => fn(element));
   },
+  reduce: (list, acc, fn) =>
+    list.reduce((acc, item, index) => fn(acc, item, index), acc),
   get: (list, index) => list[index],
   "atom?": item => !isSymbol(item) && item.length === undefined,
   define: (symbol, value) => {
@@ -280,11 +288,11 @@ const rl = readline.createInterface({
 
 function repl() {
   rl.question(
-    "What is your bidding? (tell me your bidding with a lisp)",
-    bidding => {
+    "Enter your Lisp command: ",
+    command => {
       // TODO: Log the answer in a database
-      if (bidding.trim() === ".exit") return rl.close();
-      console.log(toExport.stringEval(bidding));
+      if (command.trim() === ".exit") return rl.close();
+      console.log(toExport.stringEval(command));
       repl();
     }
   );

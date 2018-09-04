@@ -278,3 +278,20 @@ assert("two dimensional iteration can be abstracted", () => {
 assert("less than is supported", () => {
   return equalsEval("(1 2 lt?)", true);
 });
+
+assert("number of neighbors found", () => {
+  [
+    "(bitmap' ((0 1 1 0 0 1 1 0) (1 1 0 0 1 0 1 1) (0 0 1 0 1 1 0 0)) define)",
+    "(neighborhood' ((0 0 0) (0 1 0) (0 0 0)) define)",
+    "(getElm' ((row col twodArray) ((twodArray row get) col get) lambda) define)",
+    "(checkLive' ((bitRow' neiRow' bitCol' neiCol') ((((((neiRow 1 eq?) (neiCol 1 eq?) and) 0) ((neiRow 0 lt?) 0) ((neiCol 0 lt?) 0) (else (((bitRow (neiRow 1 -) -) (bitCol (neiCol 1 -) -) bitmap getElm))) cond)) lambda) define)",
+    "(liveNeighbors' ((bitRow' bitCol') (neighborhood ((neiRow' neiCol') (liveCount' (liveCount (bitRow neiRow bitCol neiCol checkLive) +) define) lambda) 2d_each) lambda) define)",
+    "(parseRow' ((rowIndex' bitmap' callback') (((((bitmap rowIndex get) len) 1 -) fillRange) ((colIndex) (rowIndex colIndex callback) lambda) map) lambda) define)",
+    "(2d_map' ((bitmap' callback') ((((bitmap len) 1 -) fillRange) ((rowIndex') (rowIndex bitmap callback parseRow) lambda) map) lambda) define)"
+  ].map(eval);
+  console.log(JSON.stringify(eval("(bitmap liveNeighbors 2d_map)")));
+});
+
+assert("multiple spaces are allowed", () => {
+  return equalsEval("(2     3 *)", 6);
+});
