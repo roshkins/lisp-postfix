@@ -1,6 +1,6 @@
 # Rashi's lisp-postfix interpreter
 
-Hi there! Thanks for reviewing my project. You can get started by doing `npm start`. That will run the REPL.
+You can get started by doing `npm start`. That will run the REPL.
 
 Please note there is no syntax checking, so be careful. Also, all symbols need to be escaped, (unless they are not defined), because they will otherwise be interpreted as their value.
 
