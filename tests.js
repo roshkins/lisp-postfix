@@ -295,3 +295,10 @@ assert("number of neighbors found", () => {
 assert("multiple spaces are allowed", () => {
   return equalsEval("(2     3 *)", 6);
 });
+
+assert("string", () => {
+  return equalsEval('"Im a string"', "Im a string");
+})
+assert("quoted string concatination", () => {
+  return (equalsEval('("Hello  "   " world" +)'), "Hello   world")
+});

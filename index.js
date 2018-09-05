@@ -233,6 +233,11 @@ toExport.eval = function eval(statement, scopeObj) {
   }
 };
 
+const readTable = {
+  "(": function pushToList(){
+    
+  }
+}
 toExport.parse = function parse(statement) {
   let deparensStatement = statement;
   //remove parens (assuming valid statement)
@@ -244,6 +249,7 @@ toExport.parse = function parse(statement) {
   let openMinusClosed = 0;
   let token = "";
   let stack = [];
+  let inAString = false;
   deparensStatement.split("").forEach((char, idx) => {
     //skip char in token
     let skip = false;
@@ -254,14 +260,19 @@ toExport.parse = function parse(statement) {
       case ")":
         openMinusClosed--;
         break;
+        case "\"":
+        inAString = !inAString;
+        break;
       case " ":
         //if 0 count parens && char is a space, push onto stack
-        if (openMinusClosed === 0 && deparensStatement[idx+1] !== " ") {
+        if (openMinusClosed === 0 && !inAString && deparensStatement[idx+1] !== " ") {
           //push token
           stack.push(token);
           token = "";
-          //skip space
-          skip = true;
+        } 
+        if(openMinusClosed === 0 && !inAString) {
+                    //skip space
+                    skip = true;
         }
         break;
     }
